@@ -16,23 +16,31 @@ OLLAMA_BASE_URL = "http://localhost:11434"
 # Пример: mistral, neural-chat, dolphin-mixtral, etc.
 MODELS = [
     # local/light models
-    "mistral",               # 7B small
-    "translategemma:latest",        # translation-focused
-    "gemma2:latest",                 # general-purpose
-    "phi3:mini",           # 3B, very fast for quick checks
+    # "mistral",               # 7B small
+    # "translategemma:latest",        # translation-focused
+    # "gemma2:latest",                 # general-purpose
+    # "phi3:mini",           # 3B, very fast for quick checks
     # cloud models for comparison
-    "minimax-m2.5:cloud",    # 13B-ish, higher quality
-    "qwen3.5:cloud",
+    # "minimax-m2.5:cloud",    # 13B-ish, higher quality
+    "qwen3.5:0.8b",
+    "qwen3.5:2b",
+    "qwen3.5:4b",
+    "qwen3.5:9b"
+    # "qwen3.5:cloud",
     # "dolphin-mixtral",     # local large model
     # еще модели...
 ]
 
 # Путь к твоему параллельному файлу
-# Формат: TSV → source \t target
-DATA_PATH = "parallel_inference.tcsv"
+# Формат: CSV с колонками: source_text, target_translation, source_name, source_file, language, language_id
+DATA_PATH = "parallel_corpus.csv"
+
+# Языки для инференса (можно фильтровать по language или language_id)
+# LANGUAGE_TO_ID = {'en': 0, 'de': 1, 'sv': 2, 'unknown': 3}
+TARGET_LANGUAGE = "en"  # английский для перевода
 
 MIN_WORDS = 6  # минимальное количество слов в исходном тексте
-NUM_SAMPLES = 25  # количество пар для инференса
+NUM_SAMPLES = 100  # количество пар для инференса
 REQUEST_TIMEOUT = 120  # timeout на запрос к Ollama
 RANDOM_SEED = 42  # для воспроизводимости
 
@@ -40,21 +48,39 @@ RANDOM_SEED = 42  # для воспроизводимости
 # LOAD DATA
 # ======================
 
-def load_data(path):
+def load_data(path, target_language="en"):
+    """
+    Load data from CSV file with parallel corpus.
+    
+    Args:
+        path: Path to CSV file
+        target_language: Filter by target language (e.g., 'en', 'de', 'sv')
+    
+    Returns:
+        sources, references: Lists of source texts and reference translations
+    """
+    import pandas as pd
+    
+    df = pd.read_csv(path)
+    
+    # Filter by target language if specified
+    if target_language:
+        df = df[df['language'] == target_language]
+    
     sources = []
     references = []
-
-    with open(path, "r", encoding="utf-8") as f:
-        for line in f:
-            src, tgt = line.strip().split("\t")
-            
-            # Фильтр по количеству слов в исходном тексте
-            word_count = len(src.split())
-            if word_count < MIN_WORDS:
-                continue
-            
-            sources.append(src)
-            references.append(tgt)
+    
+    for _, row in df.iterrows():
+        src = row['source_text']
+        tgt = row['target_translation']
+        
+        # Фильтр по количеству слов в исходном тексте
+        word_count = len(src.split())
+        if word_count < MIN_WORDS:
+            continue
+        
+        sources.append(src)
+        references.append(tgt)
 
     return sources, references
 
@@ -70,7 +96,7 @@ def translate_with_ollama(model_name, text):
     # the prompt only requests the translation; model should respond with just
     # the English text, no extra labels or commentary
     prompt = f"""Translate the following Old Norse/Runic transliteration to
-English. Provide only the English translation, without any additional text.
+English. Provide only the English translation, without any additional text."
 
 {text}"""
     
@@ -81,7 +107,8 @@ English. Provide only the English translation, without any additional text.
                 "model": model_name,
                 "prompt": prompt,
                 "stream": False,
-                "temperature": 0.3,  # low temperature for consistency
+                "temperature": 0.3,  # low temperature for consistency,
+                "think": False  # disable "thinking..." placeholder
             },
             timeout=REQUEST_TIMEOUT
         )
@@ -186,8 +213,8 @@ def main():
     
     # Load data
     print(f"\n📂 Loading dataset from {DATA_PATH}...")
-    print(f"   (Filtering: only texts with {MIN_WORDS}+ words)")
-    sources, references = load_data(DATA_PATH)
+    print(f"   (Filtering: language={TARGET_LANGUAGE}, min_words={MIN_WORDS})")
+    sources, references = load_data(DATA_PATH, target_language=TARGET_LANGUAGE)
     print(f"✓ Loaded {len(sources)} source-reference pairs after filtering")
     
     # Select random samples
