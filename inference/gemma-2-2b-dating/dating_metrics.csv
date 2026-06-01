@@ -1,0 +1,2 @@
+Model,MAE,RMSE,Median_Error,Mean_Error,Std_Error,MAPE,Mean_Spread,Valid_Predictions
+gemma-2-2b-dating,195.9,257.96,137.5,195.9,167.84,18.24,137.7,100

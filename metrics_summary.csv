@@ -1,0 +1,13 @@
+Model,Target_Language,BLEU,chrF++,Valid_Predictions
+qwen3.5:0.8b,en,2.31,11.82,99
+qwen3.5:2b,en,4.32,13.81,100
+qwen3.5:4b,en,4.52,15.61,100
+qwen3.5:9b,en,4.21,17.89,100
+qwen3.5:0.8b,de,1.55,9.99,100
+qwen3.5:2b,de,3.96,11.08,99
+qwen3.5:4b,de,5.79,11.61,100
+qwen3.5:9b,de,2.96,12.32,100
+qwen3.5:0.8b,sv,0.35,10.6,99
+qwen3.5:2b,sv,0.69,12.21,100
+qwen3.5:4b,sv,0.79,9.69,99
+qwen3.5:9b,sv,2.67,16.17,100

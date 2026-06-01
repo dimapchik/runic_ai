@@ -1,0 +1,25 @@
+job:
+  time_limit: 36h
+  region: ix-m4-sm4
+  flavor: a100-1x
+  generate_name: test-train
+  image: pytorch/pytorch:2.4.0-cuda12.4-cudnn9-devel
+  entrypoint: ""
+  input:
+  - type: files
+    src: ./
+    dst: /train_model
+  - type: model_registry
+    src: Qwen/Qwen3.5-0.8B
+    version: 2fc06364715b967f1860aea9cf38778875588b17
+    dst: /models/
+  output:
+  - type: files
+    name: fine_tuned_model
+    src: /train_model/model_trained
+  args:
+  - bash
+  - -c
+  - |
+    pip install --break-system-packages -r /train_model/requirements.txt && \
+    python /train_model/train_dating_regression.py

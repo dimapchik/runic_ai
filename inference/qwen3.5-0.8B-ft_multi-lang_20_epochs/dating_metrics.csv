@@ -1,0 +1,2 @@
+Model,MAE,RMSE,Median_Error,Mean_Error,Std_Error,MAPE,Mean_Spread,BLEU,chrF,chrF++,ROUGE-L,METEOR,Valid_Predictions
+qwen3.5-0.8B-ft_multi-lang_20_epochs,245.32,372.83,100.28,245.32,280.75,19.94,137.7,0.0,13.32,11.65,33.33,0.0,100

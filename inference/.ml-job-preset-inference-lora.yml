@@ -1,0 +1,28 @@
+job:
+  time_limit: 2h
+  region: ix-m4-sm4
+  flavor: a100-2x
+  generate_name: test-inference-lora
+  image: pytorch/pytorch:2.4.0-cuda12.4-cudnn9-devel
+  entrypoint: ""
+  input:
+  - type: files
+    src: ./inference_local.py
+    dst: /inference
+  - type: model_registry
+    src: Qwen/Qwen3.5-0.8B
+    version: 2fc06364715b967f1860aea9cf38778875588b17
+    dst: /models/
+  output:
+  - type: files
+    name: inference_results
+    src: /inference/qwen3.5-0.8B-ft_de
+  - type: files
+    name: plots
+    src: /plots
+  args:
+  - bash
+  - -c
+  - |
+    pip install --break-system-packages -r /inference/requirements.txt && \
+    python /inference/inference_lora.py

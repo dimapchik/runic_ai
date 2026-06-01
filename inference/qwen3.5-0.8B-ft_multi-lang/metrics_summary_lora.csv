@@ -1,0 +1,4 @@
+Model,Target_Language,BLEU,chrF,chrF++,ROUGE-L,METEOR,Valid_Predictions
+qwen3.5-0.8B-ft_multi-lang,en,7.19,33.14,31.75,42.35,0.0,100
+qwen3.5-0.8B-ft_multi-lang,de,4.95,27.02,25.77,36.8,0.0,100
+qwen3.5-0.8B-ft_multi-lang,sv,15.76,36.62,34.46,0.0,0.0,100

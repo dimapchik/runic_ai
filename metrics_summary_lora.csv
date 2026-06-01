@@ -1,0 +1,4 @@
+Model,Target_Language,BLEU,chrF++,Valid_Predictions
+qwen3.5:0.8b-ft,en,8.3,28.63,100
+qwen3.5:0.8b-ft,de,1.85,8.86,100
+qwen3.5:0.8b-ft,sv,0.37,7.47,100

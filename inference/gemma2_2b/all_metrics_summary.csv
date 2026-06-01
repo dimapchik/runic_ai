@@ -1,0 +1,4 @@
+Model,Target_Language,BLEU,chrF,chrF++,ROUGE-L,METEOR,Valid_Predictions
+gemma2:2b,en,4.03,13.71,12.27,7.46,0.0,100
+gemma2:2b,de,6.54,6.7,6.85,4.24,0.0,100
+gemma2:2b,sv,1.94,10.98,9.75,2.82,0.0,100
